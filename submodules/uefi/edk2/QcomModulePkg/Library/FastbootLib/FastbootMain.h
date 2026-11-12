@@ -58,6 +58,9 @@ EFI_STATUS HandleUsbEvents (VOID);
 EFI_STATUS FastbootUsbDeviceStop (VOID);
 EFI_STATUS FastbootInitialize (VOID);
 
+/* Mirror a complete, already-rendered console frame to the N6 cover. */
+VOID N6MirrorConsole (VOID);
+
 /*
  * Ask the fastboot loop to end and hand control back to the boot menu. Safe to
  * call from a command handler: the loop observes the request after the current

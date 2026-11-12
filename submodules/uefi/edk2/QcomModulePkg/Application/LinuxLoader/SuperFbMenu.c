@@ -11,6 +11,8 @@
 #include "SuperFbMenu.h"
 #include "SuperFbAdvanced.h"
 
+#include <FastbootLib/FastbootMain.h>
+
 #include <Library/BaseLib.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>
@@ -38,6 +40,8 @@ SfbWaitForKey (IN UINT32 TimeoutMs)
   UINTN          EventIndex;
   EFI_INPUT_KEY  Key;
   SFB_KEY        Result = SfbKeyTimeout;
+
+  N6MirrorConsole ();
 
   if (TimeoutMs != 0) {
     Status = gBS->CreateEvent (EVT_TIMER, TPL_CALLBACK, NULL, NULL, &TimerEvent);
@@ -195,6 +199,7 @@ SfbShowFastbootMode (VOID)
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
 
   Print (L"FASTBOOT MODE\r\n");
+  N6MirrorConsole ();
 
   gST->ConOut->SetAttribute (gST->ConOut, SFB_ATTR_NORMAL);
 }
@@ -219,6 +224,9 @@ SfbShowBootingScreen (IN CONST CHAR16 *Name, IN BOOLEAN ClearScreen)
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
 
   Print (L"Booting %s\r\n", (Name != NULL && Name[0] != L'\0') ? Name : L"...");
+  if (ClearScreen) {
+    N6MirrorConsole ();
+  }
 
   gST->ConOut->SetAttribute (gST->ConOut, SFB_ATTR_NORMAL);
 }
@@ -236,6 +244,7 @@ SfbShowActionScreen (IN CONST CHAR16 *Text)
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
 
   Print (L"%s\r\n", Text);
+  N6MirrorConsole ();
 
   gST->ConOut->SetAttribute (gST->ConOut, SFB_ATTR_NORMAL);
 }
@@ -255,6 +264,7 @@ SfbShowEnteringMenu (VOID)
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
 
   Print (L"Entering Boot Menu\r\n");
+  N6MirrorConsole ();
 
   gST->ConOut->SetAttribute (gST->ConOut, SFB_ATTR_NORMAL);
 
@@ -284,6 +294,7 @@ SfbShowEnteringScreen (IN CONST CHAR16 *What)
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
 
   Print (L"Entering %s\r\n", (What != NULL) ? What : L"...");
+  N6MirrorConsole ();
 
   gST->ConOut->SetAttribute (gST->ConOut, SFB_ATTR_NORMAL);
 

@@ -104,6 +104,7 @@
   QcomModulePkg/QcomModulePkg.dec
 
 [LibraryClasses]
+  PrintLib
   UefiApplicationEntryPoint
   UefiLib
   PcdLib
@@ -112,6 +113,8 @@
   CompilerIntrinsicsLib
 
 [Protocols]
+  gEfiLoadedImageProtocolGuid
+  gEfiGraphicsOutputProtocolGuid
   gEfiSimpleTextInProtocolGuid
   gEfiSimpleTextOutProtocolGuid
   gEfiBlockIoProtocolGuid
