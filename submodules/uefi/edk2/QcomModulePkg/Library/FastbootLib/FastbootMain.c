@@ -408,13 +408,15 @@ VOID ShutdownDevice (VOID);
 
 /* Reboot reason values, mirroring ShutdownServices.h's RebootReasonType. The
  * header is deliberately not pulled in here just for these constants. */
-#define NORMAL_MODE  0x0
+#define NORMAL_MODE    0x0
+#define RECOVERY_MODE  0x1
 
-#define FB_ACTION_ROWS  3
+#define FB_ACTION_ROWS  4
 
 STATIC CONST CHAR16 *mFbActionRow[FB_ACTION_ROWS] = {
   L"Power Off",
   L"Restart",
+  L"Recovery",
   L"Exit to menu",
 };
 STATIC UINTN mFbActionCursor = 0;
@@ -440,6 +442,7 @@ typedef enum {
   FbActionNone = 0,
   FbActionPowerOff,
   FbActionRestart,
+  FbActionRecovery,
   FbActionExitMenu
 } FB_ACTION;
 
@@ -524,6 +527,8 @@ FastbootPollActionKey (VOID)
     return FbActionPowerOff;
   case 1:
     return FbActionRestart;
+  case 2:
+    return FbActionRecovery;
   default:
     return FbActionExitMenu;
   }
@@ -576,6 +581,11 @@ EFI_STATUS FastbootInitialize (VOID)
     case FbActionRestart:
       FastbootShowActionScreen (L"Restarting...");
       RebootDevice (NORMAL_MODE);
+      return EFI_SUCCESS;
+
+    case FbActionRecovery:
+      FastbootShowActionScreen (L"Rebooting to recovery...");
+      RebootDevice (RECOVERY_MODE);
       return EFI_SUCCESS;
 
     case FbActionExitMenu:

@@ -531,6 +531,11 @@ SfbRunBootMenu (VOID)
       RebootDevice (NORMAL_MODE);
       break;
 
+    case SfbEntryRecovery:
+      SfbShowActionScreen (L"Rebooting to recovery...");
+      RebootDevice (RECOVERY_MODE);
+      break;
+
     case SfbEntryEfiFile:
     default:
       Status = SfbLaunchEntry (&Menu.Entry[Chosen], FALSE, TRUE);

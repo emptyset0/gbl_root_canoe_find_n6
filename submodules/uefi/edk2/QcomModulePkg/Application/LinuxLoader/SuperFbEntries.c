@@ -847,11 +847,8 @@ SfbResolveDefault (IN OUT SFB_MENU_STATE *Menu)
     SfbFreeEntry (&Saved);
   }
   if (Menu->DefaultIndex == SFB_NO_INDEX) {
-    for (Index = 0; Index < Menu->Count; Index++) {
-      if (Menu->Entry[Index].Kind == SfbEntryEfiFile) {
-        Menu->DefaultIndex = Index;
-        break;
-      }
+    if (Menu->Count != 0) {
+      Menu->DefaultIndex = 0;
     }
   }
 }
@@ -862,6 +859,7 @@ SfbBuildMenu (OUT SFB_MENU_STATE *Menu)
   ZeroMem (Menu, sizeof (*Menu));
   Menu->DefaultIndex = SFB_NO_INDEX;
 
+  SfbAppendBuiltIn (Menu, SfbEntryRecovery, L"Recovery");
   SfbScanVolumes (Menu);
   SfbAppendCustomEntry (Menu);
 

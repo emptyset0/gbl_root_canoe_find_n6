@@ -87,7 +87,8 @@ typedef enum {
   /* Power management actions offered at the end of the menu and on the
    * fastboot mode screen. */
   SfbEntryPowerOff,
-  SfbEntryRestart
+  SfbEntryRestart,
+  SfbEntryRecovery
 } SFB_ENTRY_KIND;
 
 typedef struct {
