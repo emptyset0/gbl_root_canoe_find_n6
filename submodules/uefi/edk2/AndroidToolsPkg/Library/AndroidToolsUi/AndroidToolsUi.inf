@@ -30,4 +30,5 @@
   UefiLib
 
 [Protocols]
+  gN6CoverMirrorProtocolGuid
   gEfiSimpleTextInProtocolGuid

@@ -85,6 +85,7 @@
   UsbSerial.c
   FastbootResponse.c
   FastbootCmds.c
+  N6CoverMirror.c
   PartitionTableUpdate.c
   Board.c
   ThreadStack.c
@@ -97,6 +98,7 @@
   GCC:*_*_*_CC_FLAGS = $(LLVM_ENABLE_SAFESTACK) $(LLVM_SAFESTACK_USE_PTR) $(LLVM_SAFESTACK_COLORING)
 
 [Packages]
+  AndroidToolsPkg/AndroidToolsPkg.dec
   ArmPkg/ArmPkg.dec
   EmbeddedPkg/EmbeddedPkg.dec
   MdePkg/MdePkg.dec
@@ -104,6 +106,7 @@
   QcomModulePkg/QcomModulePkg.dec
 
 [LibraryClasses]
+  PrintLib
   UefiApplicationEntryPoint
   UefiLib
   PcdLib
@@ -114,6 +117,9 @@
   SfbSecurityLib
 
 [Protocols]
+  gN6CoverMirrorProtocolGuid
+  gEfiLoadedImageProtocolGuid
+  gEfiGraphicsOutputProtocolGuid
   gEfiSimpleTextInProtocolGuid
   gEfiSimpleTextOutProtocolGuid
   gEfiBlockIoProtocolGuid

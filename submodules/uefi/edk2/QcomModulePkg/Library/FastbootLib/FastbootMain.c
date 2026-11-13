@@ -466,6 +466,7 @@ FastbootDrawModeScreen (VOID)
 
   gST->ConOut->SetAttribute (gST->ConOut, FB_ATTR_NORMAL);
   Print (L"\r\nVol Up/Down: move   Power: select\r\n");
+  N6MirrorConsole ();
 }
 
 STATIC
@@ -477,6 +478,7 @@ FastbootShowActionScreen (IN CONST CHAR16 *Text)
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
 
   Print (L"%s\r\n", Text);
+  N6MirrorConsole ();
 
   gST->ConOut->SetAttribute (gST->ConOut, FB_ATTR_NORMAL);
 }
@@ -533,24 +535,22 @@ EFI_STATUS FastbootInitialize (VOID)
 
   DEBUG ((EFI_D_INFO, "Fastboot Build Info: %a %a\n", __DATE__, __TIME__));
 
-  /* Start the USB device enumeration */
-  Status = FastbootUsbDeviceStart ();
-  if (Status != EFI_SUCCESS) {
-    DEBUG ((EFI_D_ERROR, "couldnt Start fastboot usb device, exiting"));
-    return Status;
-  }
-  StoreRootDeviceType ();
-
   /*
-   * Draw the on-device fastboot mode screen with the power/restart actions. A
-   * key held while entering fastboot (the power press that confirmed "Enter
-   * Fastboot") is released and drained first, with a brief pause, so it cannot
-   * fire a spurious confirm on the highlighted action row.
+   * Finish the key debounce and first render (including the cover mirror)
+   * before StartEx enables enumeration. The USB protocol is polled; a stall
+   * or a framebuffer copy here after StartEx delays its first HandleEvent.
    */
   gBS->Stall (1000000);
   gST->ConIn->Reset (gST->ConIn, FALSE);
   mFbActionCursor = 0;
   FastbootDrawModeScreen ();
+  StoreRootDeviceType ();
+
+  Status = FastbootUsbDeviceStart ();
+  if (Status != EFI_SUCCESS) {
+    DEBUG ((EFI_D_ERROR, "couldnt Start fastboot usb device, exiting"));
+    return Status;
+  }
 
   /* Wait for USB events in tight loop */
   while (1) {

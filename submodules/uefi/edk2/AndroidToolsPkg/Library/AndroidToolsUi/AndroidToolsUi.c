@@ -16,6 +16,7 @@
 #include <Library/UefiLib.h>
 #include <Protocol/SimpleTextIn.h>
 #include <Protocol/SimpleTextOut.h>
+#include <Protocol/N6CoverMirror.h>
 
 #include "AndroidToolsUi.h"
 
@@ -33,6 +34,18 @@
  * once and confirms the first menu entry. */
 #define AT_ENTER_MENU_DELAY_S  2
 
+STATIC VOID
+AtUiMirrorFrame (VOID)
+{
+  N6_COVER_MIRROR_PROTOCOL *Mirror = NULL;
+
+  if (!EFI_ERROR (gBS->LocateProtocol (&gN6CoverMirrorProtocolGuid, NULL,
+                                      (VOID **)&Mirror)) &&
+      Mirror != NULL && Mirror->MirrorFrame != NULL) {
+    (VOID)Mirror->MirrorFrame (Mirror);
+  }
+}
+
 AT_KEY
 AtUiWaitForKey (
   IN UINT32 TimeoutMs
@@ -45,6 +58,10 @@ AtUiWaitForKey (
   UINTN          EventIndex;
   EFI_INPUT_KEY  Key;
   AT_KEY         Result = AtKeyTimeout;
+
+  /* The caller may have drawn its own confirmation text after BeginScreen.
+   * Mirror the completed frame once, immediately before it waits for input. */
+  AtUiMirrorFrame ();
 
   if (TimeoutMs != 0) {
     Status = gBS->CreateEvent (EVT_TIMER, TPL_CALLBACK, NULL, NULL, &TimerEvent);
@@ -122,6 +139,7 @@ AtUiEnterMenu (
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
   Print (L"Entering %s\r\n", (Title != NULL) ? Title : L"Menu");
   gST->ConOut->SetAttribute (gST->ConOut, AT_ATTR_NORMAL);
+  AtUiMirrorFrame ();
 
   /* Wait for the launching key to be released... */
   gBS->Stall (AT_ENTER_MENU_DELAY_S * 1000 * 1000);
@@ -223,6 +241,7 @@ AtUiShowMessage (
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
   Print (L"\r\n\r\n  %s\r\n", (Text != NULL) ? Text : L"");
   gST->ConOut->SetAttribute (gST->ConOut, AT_ATTR_NORMAL);
+  AtUiMirrorFrame ();
 }
 
 VOID

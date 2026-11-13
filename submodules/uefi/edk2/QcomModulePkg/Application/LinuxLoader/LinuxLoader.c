@@ -264,6 +264,9 @@ LinuxLoaderEntry (IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE *SystemTable)
     }
     /* Publish the status protocol for launched applications. */
     (VOID)SfbSecurityInstallProtocol ();
+    /* Publish the optional N6 frame mirror before startup entries or menu
+     * entries can launch a separate EFI image. */
+    (VOID)N6InstallCoverMirror ();
 
     /*
      * Load (or build and store) the boot entries and, unless the menu was
