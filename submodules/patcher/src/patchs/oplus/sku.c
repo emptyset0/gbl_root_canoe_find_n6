@@ -9,7 +9,7 @@
 #define PE_MACHINE_ARM64 0xAA64u
 #define PE_SECTION_EXECUTABLE 0x20000000u
 #define MAX_PE_SECTIONS 96u
-#define TRAMPOLINE_WORDS 14u
+#define TRAMPOLINE_WORDS 16u
 #define TRAMPOLINE_BYTES (TRAMPOLINE_WORDS * 4u)
 #define MIN_CAVE_RUN 0x80u
 
@@ -300,7 +300,7 @@ static bool choose_cave(const char* data, int32_t size, const PeImage* pe,
         *rva = s->rva + pos;
         if (!range_ok(size, *raw, TRAMPOLINE_BYTES) ||
             !encode_b(hook, *rva, &branch) ||
-            !encode_b(*rva + 52u, hook + 4u, &branch) ||
+            !encode_b(*rva + 60u, hook + 4u, &branch) ||
             !encode_adr(*rva + 12u, project, 10, &adr)) continue;
         bool zero = true;
         for (uint32_t j = pos; j < usable; ++j) {
@@ -373,24 +373,25 @@ bool patch_sku_25001_to_31(char* buffer, int32_t size) {
 
     words[0] = original_and;         /* original output argument instruction */
     words[1] = 0x71005c7fu;         /* cmp w3, #23 */
-    words[2] = 0x54000161u;         /* b.ne done */
+    words[2] = 0x540001a1u;         /* b.ne done */
     if (!encode_adr(cave_rva + 12u, project_buf, 10, &words[3]) ||
-        !encode_b(cave_rva + 52u, hook_rva + 4u, &words[13]) ||
+        !encode_b(cave_rva + 60u, hook_rva + 4u, &words[15]) ||
         !encode_b(hook_rva, cave_rva, &branch)) return false;
     words[4] = 0xb8415149u;         /* ldur w9, [x10,#21] */
     words[5] = 0x5286a64bu;         /* movz w11,#0x3532 */
     words[6] = 0x72a6060bu;         /* movk w11,#0x3030,lsl#16 */
     words[7] = 0x6b0b013fu;         /* cmp w9,w11 */
-    words[8] = 0x540000a1u;         /* b.ne done */
+    words[8] = 0x540000e1u;         /* b.ne done */
     words[9] = 0x78419149u;         /* ldurh w9,[x10,#25] */
-    words[10] = 0x7100c53fu;        /* cmp w9,#'1' */
-    words[11] = 0x528003ebu;        /* mov w11,#31 */
-    words[12] = 0x1a830163u;        /* csel w3,w11,w3,eq */
+    words[10] = 0x5100c529u;        /* sub w9,w9,#'1' */
+    words[11] = 0x7100053fu;        /* cmp w9,#1: accept only '1' or '2' plus NUL */
+    words[12] = 0x528003ebu;        /* mov w11,#31 */
+    words[13] = 0x1a839163u;        /* csel w3,w11,w3,ls */
 
     for (uint32_t i = 0; i < TRAMPOLINE_WORDS; ++i)
         write_instr(buffer, (int32_t)cave_raw + (int32_t)i * 4, words[i]);
     write_instr(buffer, (int32_t)hook_raw, branch);
-    printf("SKU: isolated bootconfig output 25001/23 -> 31, hook RVA 0x%X, cave RVA 0x%X\n",
+    printf("SKU: isolated bootconfig output 25001|25002/23 -> 31, hook RVA 0x%X, cave RVA 0x%X\n",
            hook_rva, cave_rva);
     return true;
 }

@@ -13,7 +13,7 @@
 ## SKU branch (`n6_sku_cn2apc`)
 
 This branch adds an ABL patch that changes only the formatted
-`androidboot.product.hardware.sku` value for project 25001 from 23 to 31.
+`androidboot.product.hardware.sku` value for projects 25001 and 25002 from 23 to 31.
 It does not change the shared project classifier or `oplusboot.sku`. The
 rewriter finds the bootconfig output site semantically in the AArch64 PE and
 requires a unique, safe executable cave; unsupported or ambiguous firmware

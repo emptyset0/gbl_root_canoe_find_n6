@@ -176,7 +176,7 @@ int32_t patch_adrl_unlocked_to_locked(char* buffer, int32_t size, uint64_t load_
 #include "patchs/oplus/sku.h"
 bool PatchBuffer(char* data, int32_t size) {
     if (!patch_sku_25001_to_31(data, size)) {
-        printf("Error: Failed to patch project 25001 bootconfig SKU output\n");
+        printf("Error: Failed to patch project 25001/25002 bootconfig SKU output\n");
         return false;
     }
 
